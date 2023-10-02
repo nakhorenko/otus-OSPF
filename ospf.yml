@@ -1,0 +1,86 @@
+---
+- name: OSPF
+  hosts: all
+  become: true
+
+  tasks:
+  - name: install base tools
+    ansible.builtin.apt:
+      name:
+        - nano
+        - traceroute
+        - tcpdump
+        - net-tools
+      state: present
+      update_cache: true
+
+  - name: disable ufw service
+    ansible.builtin.service:
+      name: ufw
+      state: stopped
+      enabled: false
+
+  - name: add gpg frrouting.org
+    ansible.builtin.apt_key:
+      url: "https://deb.frrouting.org/frr/keys.asc"
+      state: present
+
+  - name: add frr repo
+    ansible.builtin.apt_repository:
+      repo: 'deb https://deb.frrouting.org/frr {{ ansible_distribution_release }} frr-stable'
+      state: present
+
+  - name: install FRR packages
+    ansible.builtin.apt:
+      name:
+        - frr
+        - frr-pythontools
+      state: present
+      update_cache: true
+
+  - name: set up forward packages across routers
+    ansible.builtin.sysctl:
+      name: net.ipv4.conf.all.forwarding
+      value: '1'
+      state: present
+
+  - name: base set up OSPF
+    ansible.builtin.template:
+      src: daemon.ini.j2
+      dest: /etc/frr/daemons
+      owner: frr
+      group: frr
+      mode: 0640
+
+  - name: copy frr_r1.conf
+    ansible.builtin.template:
+      src: frr_r1.conf
+      dest: /etc/frr/frr.conf.j2
+      owner: frr
+      group: frr
+      mode: 0640
+    when: (ansible_hostname == "router1")
+
+  - name: copy frr_r2.conf
+    ansible.builtin.template:
+      src: frr_r2.conf.j2
+      dest: /etc/frr/frr.conf
+      owner: frr
+      group: frr
+      mode: 0640
+    when: (ansible_hostname == "router2")
+
+  - name: copy frr3.conf
+    ansible.builtin.template:
+      src: frr_r3.conf.j2
+      dest: /etc/frr/frr.conf
+      owner: frr
+      group: frr
+      mode: 0640
+    when: (ansible_hostname == "router3")
+
+  - name: restart FRR
+    ansible.builtin.service:
+      name: frr
+      state: restarted
+      enabled: true
