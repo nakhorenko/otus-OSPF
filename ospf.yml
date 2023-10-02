@@ -38,9 +38,9 @@
       state: present
       update_cache: true
 
-  - name: set up forward packages across routers
-    ansible.builtin.sysctl:
-      name: net.ipv4.conf.all.forwarding
+  - name: set up asynchronous routing
+    sysctl:
+      name: net.ipv4.conf.all.rp_filter
       value: '1'
       state: present
 
