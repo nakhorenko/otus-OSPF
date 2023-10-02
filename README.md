@@ -25,7 +25,7 @@ vagrant up
 root@router3:~# systemctl status frr
 ● frr.service - FRRouting
      Loaded: loaded (/lib/systemd/system/frr.service; enabled; vendor preset: enabled)
-     Active: active (running) since Mon 2023-05-15 11:38:29 UTC; 1h 53min ago
+     Active: active (running) since Mon 2023-10-02 13:38:22 UTC; 1h 53min ago
        Docs: https://frrouting.readthedocs.io/en/latest/setup.html
     Process: 5617 ExecStart=/usr/lib/frr/frrinit.sh start (code=exited, status=0/SUCCESS)
    Main PID: 5635 (watchfrr)
@@ -38,14 +38,14 @@ root@router3:~# systemctl status frr
              ├─5653 /usr/lib/frr/ospfd -d -F traditional -A 127.0.0.1
              └─5656 /usr/lib/frr/staticd -d -F traditional -A 127.0.0.1
 
-May 15 11:38:29 router3 watchfrr[5635]: [QDG3Y-BY5TN] ospfd state -> up : connect succeeded
-May 15 11:38:29 router3 frrinit.sh[5617]:  * Started watchfrr
-May 15 11:38:29 router3 watchfrr[5635]: [QDG3Y-BY5TN] zebra state -> up : connect succeeded
-May 15 11:38:29 router3 watchfrr[5635]: [QDG3Y-BY5TN] staticd state -> up : connect succeeded
-May 15 11:38:29 router3 watchfrr[5635]: [KWE5Q-QNGFC] all daemons up, doing startup-complete notify
-May 15 11:38:29 router3 systemd[1]: Started FRRouting.
-May 15 11:38:59 router3 ospfd[5653]: [S5PCG-77H23] Packet[DD]: Neighbor 1.1.1.1 Negotiation done (Master).
-May 15 11:38:59 router3 ospfd[5653]: [S5PCG-77H23] Packet[DD]: Neighbor 2.2.2.2 Negotiation done (Master).
+Oct 2 13:38:22 router3 watchfrr[5635]: [QDG3Y-BY5TN] ospfd state -> up : connect succeeded
+Oct 2 13:38:22 router3 frrinit.sh[5617]:  * Started watchfrr
+Oct 2 13:38:22 router3 watchfrr[5635]: [QDG3Y-BY5TN] zebra state -> up : connect succeeded
+Oct 2 13:38:22 router3 watchfrr[5635]: [QDG3Y-BY5TN] staticd state -> up : connect succeeded
+Oct 2 13:38:22 router3 watchfrr[5635]: [KWE5Q-QNGFC] all daemons up, doing startup-complete notify
+Oct 2 13:38:22 router3 systemd[1]: Started FRRouting.
+Oct 2 13:38:22 router3 ospfd[5653]: [S5PCG-77H23] Packet[DD]: Neighbor 1.1.1.1 Negotiation done (Master).
+Oct 2 13:38:22 router3 ospfd[5653]: [S5PCG-77H23] Packet[DD]: Neighbor 2.2.2.2 Negotiation done (Master).
 ```
 Проверим доступность "внешних" сетей с хоста `router3` на `router1` и `router2` соответственно.
 
@@ -104,7 +104,7 @@ traceroute to 192.168.10.1 (192.168.10.1), 30 hops max, 60 byte packets
       value: '0'
       state: present
 ```
-и в файле `frr3.conf` в блоке интерфейса `enp0s8` раскоментируем строку 
+и в файле `frr_r3.conf` в блоке интерфейса `enp0s8` раскоментируем строку 
  
 ```
 !ip ospf cost 1000 ---> ip ospf cost 1000
@@ -226,7 +226,7 @@ listening on enp0s8, link-type EN10MB (Ethernet), capture size 262144 bytes
 
 Делаем интерфейс `enp0s9` на `router2` дорогим, тем самым балансируем систему. 
 
-Для разворачивания стенда с симетричным роутингом меняем в файле `frr2.conf` в блоке интерфейса `enp0s9` раскоментируем строку 
+Для разворачивания стенда с симетричным роутингом меняем в файле `frr_r2.conf` в блоке интерфейса `enp0s9` раскоментируем строку 
 
 ```
 !ip ospf cost 1000 ---> ip ospf cost 1000
